@@ -123,9 +123,6 @@ predictionDT <- predict(modelDT, TheTesting, type ="class")
 rpart.plot(modelDT, main="Decision Tree ", extra=102, under=TRUE, faclen=0)
 fancyRpartPlot (modelDT, main="Decision Tree")
 ```
-
-CODE LINE: 134
-
 ###Test results on our subTesting data set:
 
 ```{r}
