@@ -1,6 +1,8 @@
 ---
 title: "GymTrainingPredict.rmd"
 output: html_document
+date: 18 Feb 2017
+author: Richie Liew
 ---
 
 ```{r setup, include=FALSE}
@@ -19,33 +21,38 @@ The test data are available here:
 
 
 ## Understanding and Studying the Data
-# Set working directory
+Set working directory
 ```{r}
-setwd("~/Desktop/R_PROJECT/DS/08_PRACTICAL_MACHINE_LEARING_PROJECT")
+setwd("C:/Users/LIEWR/Desktop/rproject/08_Practical_Machine_Learning")
 ```
 
 # Read in training data set
+Read in both training and testing data sets from given sites
 ```{r}
 GymTrainData <- read.csv("./data/pml-training.csv")
 GymTestData <- read.csv("./data/pml-testing.csv")
 ```
 
-# Reduce the length of the variable names associated this is very important
+# Reduce the length of the variable names associated
+This is very important for fast and acurate results
 ```{r}
 attach(GymTrainData)
+```
 
 # View a summary of the Classe field data
+Take a look at the summary of the dataset
 ```{r}
 table(GymTrainData$classe)
 ```
 
-# List 50 headings of the data set
+# List 33 headings of the data set
+Get a rough view of the columns headers
 ```{r}
-summary(GymTrainData)
-head(names(GymTrainData),200)
+head(names(GymTrainData),33)
 ```
 
 # View some data in Historgram
+View a few groupings to get a little understanding of the data
 ```{r}
 par(mfrow=c(2,2))
 hist(roll_belt, main = "roll_belt")
@@ -55,6 +62,7 @@ hist(roll_arm, main = "roll_arm")
 
 ## Cleaning and manipulating the Data
 ### Find out which columns are in Factors
+
 ```{r}
 ColumnNames <- c()
 nCounts = ncol(GymTrainData) - 1
@@ -68,32 +76,37 @@ for(i in 1:nCounts)
 ```
 
 ### Removed all Factor Columns
+This will removed factors columns
 ```{r}
 GymTrainData <- GymTrainData[,-ColumnNames]
 ```
 
 ### Removing 1-7 Associations fields which is not needed
+The first 7 attibutes will be removed as it is not needed
 ```{r}
 GymTrainData <- GymTrainData[,-c(1,2,3,4,5,6,7)]
 ```
 
 ### Removed all 'NA'
+Remove all 'NA' as this does not work in Random Forest algorithm
 ```{r}
 GymTrainData <- GymTrainData[, colSums(is.na(GymTrainData)) == 0]
 ```
 
 # Using Random Forest to Classify
 # Load Random Forest Library
+Loading Random Forest Library and Caret Library
 ```{r}
 library(randomForest)
 library(caret)
 ```
 
-# Seed
+# Cross Validation
+Cross validation with random sampling and random Forest Algorithm.
 ```{r}
-SeedNum <- 3
-Acccuracies <- c()
-for(i in 1:3)
+SeedNum <- 12333
+acc2 <- c()
+for(i in 1:5)
 {
   set.seed(SeedNum)
   SeedNum <- SeedNum+1
@@ -108,28 +121,30 @@ for(i in 1:3)
   t <- table(prediction, GymTestSet$classe)
   print(t)
   # Accuracies
-  accuracy <- sum(GymTestSet$rightPred)/nrow(GymTestSet)
-  accuracies <- c(accuracies,accuracy)
-  print(accuracy)
+  acc1 <- sum(GymTestSet$rightPred)/nrow(GymTestSet)
+  acc2 <- c(acc2, acc1)
+  print(acc1)
 }
 ```
 
-### 
+### Classification table
+View the classification table
 ```{r}
 table(prediction, GymTestSet$classe)
 ```
 
-### 
+### The Mean Square Erro of the random Forest
+Plot the mean square error of the forest object
 ```{r}
 plot(fit)
 ```
 
-###
+### Examine the importance of each attribute within the fitted classifier
 ```{r}
 importance(fit)
 ```
 
-###
+### Obtain the plot of variable importance
 ```{r}
 varImpPlot(fit)
 ```
@@ -141,5 +156,3 @@ nrow(GymTestData)
 prediction <- predict(fit, GymTestData)
 prediction
 ```
-
-

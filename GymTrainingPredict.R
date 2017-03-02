@@ -14,7 +14,7 @@ attach(GymTrainData)
 table(GymTrainData$classe)
 
 # List 50 headings of the data set
-summary(GymTrainData)
+
 head(names(GymTrainData),180)
 
 # View some data in Historgram
@@ -49,9 +49,9 @@ library(randomForest)
 library(caret)
 
 # Seed
-SeedNum <- 3
+SeedNum <- 13
 Acccuracies <- c()
-for(i in 1:3)
+for(i in 1:1)
 {
   set.seed(SeedNum)
   SeedNum <- SeedNum+1
@@ -81,13 +81,9 @@ hist(margins.rf, main="Margins of Random Forest for Gym Training Dataset")
 boxplot(margins.rf~GymTrainData$classe, main="Margins of Random Forest for Gym Training Dataset by classe")
 
 #
-install.packages("party")
 library(party)
 classe.cforest = cforest(classe ~ ., data = GymTrainSet, controls = cforest_unbiased(ntree=1000, mtry=5))
 class.cforest
-
-
-
 
 # Applying the Random Forest into 20 Test Cases
 fit <- randomForest(classe ~., data = GymTrainData)
