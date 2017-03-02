@@ -127,13 +127,18 @@ for(i in 1:5)
 }
 ```
 
+Mean accuracy is 0.9910685.
+```{r}
+mean(acc2)
+```
+
 ### Classification table
 View the classification table
 ```{r}
 table(prediction, GymTestSet$classe)
 ```
 
-### The Mean Square Erro of the random Forest
+### The Mean Square Error of the random Forest
 Plot the mean square error of the forest object
 ```{r}
 plot(fit)
@@ -144,7 +149,7 @@ plot(fit)
 importance(fit)
 ```
 
-### Obtain the plot of variable importance
+## Obtain the plot of variable importance
 ```{r}
 varImpPlot(fit)
 ```

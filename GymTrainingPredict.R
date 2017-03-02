@@ -13,9 +13,8 @@ attach(GymTrainData)
 # View a summary of the Classe field data
 table(GymTrainData$classe)
 
-# List 50 headings of the data set
-
-head(names(GymTrainData),180)
+# List 33 headings of the data set
+head(names(GymTrainData),33)
 
 # View some data in Historgram
 par(mfrow=c(2,2))
@@ -49,9 +48,9 @@ library(randomForest)
 library(caret)
 
 # Seed
-SeedNum <- 13
+SeedNum <- 12333
 Acccuracies <- c()
-for(i in 1:1)
+for(i in 1:5)
 {
   set.seed(SeedNum)
   SeedNum <- SeedNum+1
@@ -75,19 +74,13 @@ table(prediction, GymTestSet$classe)
 plot(fit)
 importance(fit)
 varImpPlot(fit)
-margins.rf=margin(fit, GymTrainSet)
-plot(margins.rf)
-hist(margins.rf, main="Margins of Random Forest for Gym Training Dataset")
-boxplot(margins.rf~GymTrainData$classe, main="Margins of Random Forest for Gym Training Dataset by classe")
-
-#
-library(party)
-classe.cforest = cforest(classe ~ ., data = GymTrainSet, controls = cforest_unbiased(ntree=1000, mtry=5))
-class.cforest
+#margins.rf=margin(fit, GymTrainSet)
+#plot(margins.rf)
+#hist(margins.rf, main="Margins of Random Forest for Gym Training Dataset")
+#boxplot(margins.rf~GymTrainData$classe, main="Margins of Random Forest for Gym Training Dataset by classe")
 
 # Applying the Random Forest into 20 Test Cases
 fit <- randomForest(classe ~., data = GymTrainData)
 nrow(GymTestData)
 prediction <- predict(fit, GymTestData)
 prediction
-
