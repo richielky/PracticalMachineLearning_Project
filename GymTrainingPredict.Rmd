@@ -1,0 +1,145 @@
+---
+title: "GymTrainingPredict.rmd"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background 
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: <http://groupware.les.inf.puc-rio.br/har> (see the section on the Weight Lifting Exercise Dataset).
+
+## Data
+The training data for this project are available here:
+<https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv>
+
+The test data are available here:
+<https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv>
+
+
+## Understanding and Studying the Data
+# Set working directory
+```{r}
+setwd("~/Desktop/R_PROJECT/DS/08_PRACTICAL_MACHINE_LEARING_PROJECT")
+```
+
+# Read in training data set
+```{r}
+GymTrainData <- read.csv("./data/pml-training.csv")
+GymTestData <- read.csv("./data/pml-testing.csv")
+```
+
+# Reduce the length of the variable names associated this is very important
+```{r}
+attach(GymTrainData)
+
+# View a summary of the Classe field data
+```{r}
+table(GymTrainData$classe)
+```
+
+# List 50 headings of the data set
+```{r}
+summary(GymTrainData)
+head(names(GymTrainData),200)
+```
+
+# View some data in Historgram
+```{r}
+par(mfrow=c(2,2))
+hist(roll_belt, main = "roll_belt")
+hist(roll_forearm, main = "roll_forearm")
+hist(roll_arm, main = "roll_arm")
+```
+
+## Cleaning and manipulating the Data
+### Find out which columns are in Factors
+```{r}
+ColumnNames <- c()
+nCounts = ncol(GymTrainData) - 1
+for(i in 1:nCounts) 
+{
+  if(is.factor(GymTrainData[,i]))
+  {
+    ColumnNames <- c(ColumnNames, i)
+  }
+}
+```
+
+### Removed all Factor Columns
+```{r}
+GymTrainData <- GymTrainData[,-ColumnNames]
+```
+
+### Removing 1-7 Associations fields which is not needed
+```{r}
+GymTrainData <- GymTrainData[,-c(1,2,3,4,5,6,7)]
+```
+
+### Removed all 'NA'
+```{r}
+GymTrainData <- GymTrainData[, colSums(is.na(GymTrainData)) == 0]
+```
+
+# Using Random Forest to Classify
+# Load Random Forest Library
+```{r}
+library(randomForest)
+library(caret)
+```
+
+# Seed
+```{r}
+SeedNum <- 3
+Acccuracies <- c()
+for(i in 1:3)
+{
+  set.seed(SeedNum)
+  SeedNum <- SeedNum+1
+  TrainIndex <- createDataPartition(y=GymTrainData$classe, p=0.75, list=FALSE)
+  GymTrainSet <- GymTrainData[TrainIndex,]
+  GymTestSet <- GymTrainData[-TrainIndex,]
+  # Fit in Random Forest Model
+  fit <- randomForest(classe ~., data = GymTrainSet, importance = T)
+  # Prediction
+  prediction <- predict(fit, GymTestSet)
+  GymTestSet$rightPred <- prediction == GymTestSet$classe
+  t <- table(prediction, GymTestSet$classe)
+  print(t)
+  # Accuracies
+  accuracy <- sum(GymTestSet$rightPred)/nrow(GymTestSet)
+  accuracies <- c(accuracies,accuracy)
+  print(accuracy)
+}
+```
+
+### 
+```{r}
+table(prediction, GymTestSet$classe)
+```
+
+### 
+```{r}
+plot(fit)
+```
+
+###
+```{r}
+importance(fit)
+```
+
+###
+```{r}
+varImpPlot(fit)
+```
+
+## Applying the Random Forest into 20 Test Cases
+```{r}
+fit <- randomForest(classe ~., data = GymTrainData)
+nrow(GymTestData)
+prediction <- predict(fit, GymTestData)
+prediction
+```
+
+
